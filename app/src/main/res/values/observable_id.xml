@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="view_click" type="id"/>
+    <item name="view_focus" type="id"/>
+    <item name="textview_length" type="id"/>
+    <item name="text_change" type="id"/>
+</resources>
