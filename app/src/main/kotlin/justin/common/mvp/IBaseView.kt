@@ -9,6 +9,5 @@ import justin.common.permission.IPermissionSupport
  */
 interface IBaseView<P> :IPermissionSupport{
     fun getContext():Context
-    fun getPresenter():P
 
 }

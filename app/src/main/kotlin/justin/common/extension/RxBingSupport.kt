@@ -7,11 +7,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.TextView
-import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.functions.Consumer
-import io.reactivex.processors.BehaviorProcessor
-import io.reactivex.processors.FlowableProcessor
-import io.reactivex.processors.PublishProcessor
+import io.reactivex.subjects.PublishSubject
 import justin.doteon.R
 
 /**
@@ -20,11 +18,11 @@ import justin.doteon.R
  */
 
 //base
-fun <T> View.bindFlowable(@IdRes id: Int, creator: ViewFlowableCreator<T>): Flowable<T> {
+fun <T> View.bindObservable(@IdRes id: Int, creator: ViewObservableCreator<T>): Observable<T> {
     val obj: Any? = getTag(id)
     if (obj != null) {
         @Suppress("UNCHECKED_CAST")
-        return obj as Flowable<T>
+        return obj as Observable<T>
     }
     val observable = creator.call()
     setTag(id, observable)
@@ -32,31 +30,31 @@ fun <T> View.bindFlowable(@IdRes id: Int, creator: ViewFlowableCreator<T>): Flow
 }
 
 
-interface ViewFlowableCreator<T> {
-    fun call(): Flowable<T>
+interface ViewObservableCreator<T> {
+    fun call(): Observable<T>
 }
 
 //view base
-fun View.click(): Flowable<View> {
+fun View.click(): Observable<View> {
     val obj: Any? = getTag(R.id.view_click)
     if (obj != null) {
         @Suppress("UNCHECKED_CAST")
-        return obj as Flowable<View>
+        return obj as Observable<View>
     }
-    val observable = PublishProcessor.create<View>()
+    val observable = PublishSubject.create<View>()
     val listener = View.OnClickListener { v -> observable.onNext(v) }
     setOnClickListener(listener)
     setTag(R.id.view_click, observable)
     return observable
 }
 
-fun View.focusChange(): Flowable<Boolean> {
+fun View.focusChange(): Observable<Boolean> {
     val obj: Any? = getTag(R.id.view_focus)
     if (obj != null) {
         @Suppress("UNCHECKED_CAST")
-        return obj as Flowable<Boolean>
+        return obj as Observable<Boolean>
     }
-    val observable = BehaviorProcessor.create<Boolean>()
+    val observable = PublishSubject.create<Boolean>()
     val listener = View.OnFocusChangeListener { _, b ->
         observable.onNext(b)
     }
@@ -81,10 +79,10 @@ fun View.visibility(goneOrInvisible: Int): Consumer<Boolean> {
 /**
  * 字符内容
  */
-fun TextView.textChange(): Flowable<CharSequence> {
-    val creator: ViewFlowableCreator<CharSequence> = object : ViewFlowableCreator<CharSequence> {
-        override fun call(): FlowableProcessor<CharSequence> {
-            val processor: BehaviorProcessor<CharSequence> = BehaviorProcessor.create()
+fun TextView.textChange(): Observable<CharSequence> {
+    val creator: ViewObservableCreator<CharSequence> = object : ViewObservableCreator<CharSequence> {
+        override fun call(): Observable<CharSequence> {
+            val processor: PublishSubject<CharSequence> = PublishSubject.create()
 
             addTextChangedListener(object : TextWatcher {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -101,14 +99,14 @@ fun TextView.textChange(): Flowable<CharSequence> {
             return processor
         }
     }
-    return bindFlowable(R.id.textview_length, creator)
+    return bindObservable(R.id.textview_length, creator)
 }
 
 
 /**
  * 字符长度
  */
-fun TextView.lengthChange(): Flowable<Int> {
+fun TextView.lengthChange(): Observable<Int> {
     return textChange().map(CharSequence::length)
 }
 

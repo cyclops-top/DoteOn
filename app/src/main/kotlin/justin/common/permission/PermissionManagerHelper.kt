@@ -11,8 +11,8 @@ import android.os.Build
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.util.SparseArray
-import io.reactivex.Flowable
-import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -21,9 +21,10 @@ import java.util.concurrent.atomic.AtomicInteger
  * @version V1.0
  */
 class PermissionManagerHelper {
-    private val mPermissionFlowable = SparseArray<BehaviorProcessor<Boolean>>()
+    private val mPermissionObservable = SparseArray<BehaviorSubject<Boolean>>()
     private val mActivity: Activity?
     private val mFragment: Fragment?
+    private val sAtomicInteger = AtomicInteger(0x888)
 
     constructor(activity: Activity) {
         mActivity = activity
@@ -45,31 +46,28 @@ class PermissionManagerHelper {
         }
 
     fun checkPermission(vararg permissions: String): Boolean {
-        for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                return false
-            }
+        return permissions.all {
+            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
-        return true
     }
 
     @SuppressLint("NewApi")
-    fun requestPermission(vararg permission: String): Flowable<Boolean> {
+    fun requestPermission(vararg permission: String): Observable<Boolean> {
         val isAllow = checkPermission(*permission)
-        val Flowable: BehaviorProcessor<Boolean>
+        val observable: BehaviorSubject<Boolean>
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || isAllow) {
-            Flowable = BehaviorProcessor.createDefault(isAllow)
+            observable = BehaviorSubject.createDefault(isAllow)
         } else {
             val requestCode = sAtomicInteger.getAndIncrement()
-            Flowable = BehaviorProcessor.create<Boolean>()
-            mPermissionFlowable.put(requestCode, Flowable)
+            observable = BehaviorSubject.create<Boolean>()
+            mPermissionObservable.put(requestCode, observable)
             if (mActivity != null) {
                 requestPermission(requestCode, mActivity, *permission)
             } else if (mFragment != null) {
                 requestPermission(requestCode, mFragment, *permission)
             }
         }
-        return Flowable
+        return observable
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -83,9 +81,9 @@ class PermissionManagerHelper {
     }
 
     fun onRequestPermissionsResult(requestCode: Int, @Suppress("UNUSED_PARAMETER") permissions: Array<String>, grantResults: IntArray) {
-        val flowable = mPermissionFlowable.get(requestCode)
+        val flowable = mPermissionObservable.get(requestCode)
         if (flowable != null) {
-            mPermissionFlowable.remove(requestCode)
+            mPermissionObservable.remove(requestCode)
             for (r in grantResults) {
                 if (r != PackageManager.PERMISSION_GRANTED) {
                     flowable.onNext(false)
@@ -96,8 +94,6 @@ class PermissionManagerHelper {
         }
     }
 
-    companion object {
-        private val sAtomicInteger = AtomicInteger(0x888)
-    }
+
 
 }

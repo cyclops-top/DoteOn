@@ -36,4 +36,5 @@ internal class MVPHelper<P : BasePresenter<*>>(view: IView) {
 
     val layout: Int
         get() = mViewAnnotation!!.value
+
 }

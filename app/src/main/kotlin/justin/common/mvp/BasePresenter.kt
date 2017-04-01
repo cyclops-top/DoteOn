@@ -1,6 +1,6 @@
 package mvp
 
-import io.reactivex.processors.BehaviorProcessor
+import io.reactivex.subjects.BehaviorSubject
 
 /**
  * @author justin on 2016/08/31 15:39
@@ -14,7 +14,7 @@ open class BasePresenter<out V : IView>(open val view: V) {
         INIT, RELEASE;
     }
 
-    val life: BehaviorProcessor<STATE> = BehaviorProcessor.create()
+    val life: BehaviorSubject<STATE> = BehaviorSubject.create()
 
     fun init() {
         life.onNext(STATE.INIT)

@@ -15,15 +15,17 @@ import mvp.MVPHelper
 open class MVPActivity<P : BasePresenter<*>> : BaseActivity(), IBaseView<P>, IView {
 
     private var helper: MVPHelper<P>? = null
+    val presenter:P
+        get() = helper!!.presenter!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         helper = MVPHelper(this)
         super.onCreate(savedInstanceState)
-        getPresenter().init()
+        presenter.init()
     }
 
     override fun onDestroy() {
-        getPresenter().release()
+        presenter.release()
         super.onDestroy()
     }
 
@@ -31,7 +33,6 @@ open class MVPActivity<P : BasePresenter<*>> : BaseActivity(), IBaseView<P>, IVi
         return this
     }
 
-    override fun getPresenter(): P = helper!!.presenter!!
     override fun getLayout(): Int = helper!!.layout
 
 

@@ -12,6 +12,8 @@ import justin.common.app.BaseFragment
  */
 open class MVPFragment<P : BasePresenter<*>> : BaseFragment(), IBaseView<P>, IView {
     private var helper: MVPHelper<P>? = null
+    val presenter:P
+        get() = helper!!.presenter!!
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -21,15 +23,14 @@ open class MVPFragment<P : BasePresenter<*>> : BaseFragment(), IBaseView<P>, IVi
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getPresenter().init()
+        presenter.init()
     }
 
     override fun onDestroyView() {
-        getPresenter().release()
+        presenter.release()
         super.onDestroyView()
     }
 
-    override fun getPresenter(): P = helper!!.presenter!!
 
     override fun getLayout(): Int = helper!!.layout
 
