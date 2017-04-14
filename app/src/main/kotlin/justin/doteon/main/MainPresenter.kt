@@ -1,4 +1,4 @@
-package justin.doteon
+package justin.doteon.main
 
 import mvp.BasePresenter
 

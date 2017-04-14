@@ -1,4 +1,4 @@
-package justin.doteon
+package justin.doteon.main
 
 import mvp.IView
 
@@ -7,6 +7,6 @@ import mvp.IView
  * @version V1.0
  */
 
-interface IMainView:IView{
+interface IMainView: IView {
 
 }

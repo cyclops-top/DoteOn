@@ -1,5 +1,6 @@
 package justin.doteon.items
 
+import justin.doteon.model.MovieSubject
 import mvp.IView
 
 /**
@@ -8,5 +9,5 @@ import mvp.IView
  */
 
 interface IItemsView:IView{
-
+    fun updateData(data:List<MovieSubject>,isMore: Boolean)
 }
