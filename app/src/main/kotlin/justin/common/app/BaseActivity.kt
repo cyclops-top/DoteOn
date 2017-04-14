@@ -1,11 +1,18 @@
 package justin.common.app
 
+import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.annotation.StringRes
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import io.reactivex.Observable
 import justin.common.activityresult.ActivityResult
@@ -14,17 +21,20 @@ import justin.common.activityresult.IActivityResultSupport
 import justin.common.extension.toast
 import justin.common.permission.IPermissionSupport
 import justin.common.permission.PermissionManagerHelper
+import justin.doteon.R
 
 /**
  * @author justin on 2017/03/31 10:57
  * *
  * @version V1.0
  */
-abstract class BaseActivity : AppCompatActivity(), IPermissionSupport, IActivityResultSupport {
+abstract class BaseActivity : AppCompatActivity(), IPermissionSupport, IActivityResultSupport,
+        IProgressSupport,IToastSupport {
 
     private var mPermissionManager: PermissionManagerHelper? = null
     private var mActivityResultManager: ActivityResultManagerHelper? = null
     private var mToast: Toast? = null
+    private var process:Dialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mPermissionManager = PermissionManagerHelper(this)
@@ -64,14 +74,36 @@ abstract class BaseActivity : AppCompatActivity(), IPermissionSupport, IActivity
 
     }
 
-    fun toast(msg: String) {
+    override fun toast(msg: String) {
         mToast?.cancel()
         mToast = (this as Context).toast(msg)
     }
 
-    fun toast(@StringRes msg: Int) {
+    override fun toast(@StringRes msg: Int) {
         mToast?.cancel()
         mToast = (this as Context).toast(msg)
     }
 
+    override fun showProgress() {
+        showProgress(false)
+    }
+    override fun showProgress(cancelable: Boolean) {
+        if(process == null) {
+            val builder = AlertDialog.Builder(this)
+            val inflater = LayoutInflater.from(this)
+            @SuppressLint("InflateParams")
+            val progressBar = inflater.inflate(R.layout.progress, null) as ProgressBar
+            builder.setView(progressBar).setCancelable(cancelable)
+            process = builder.create()
+        }
+        //noinspection ConstantConditions
+        process!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        process!!.show()
+    }
+
+    override fun dismissProgress() {
+        if(process != null){
+            process!!.dismiss()
+        }
+    }
 }

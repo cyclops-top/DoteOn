@@ -3,12 +3,11 @@ package justin.doteon;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.app.Fragment;
-import android.util.SparseArray;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static android.R.attr.data;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -27,4 +26,8 @@ public class ExampleInstrumentedTest {
 
 
     }
+
 }
+
+
+

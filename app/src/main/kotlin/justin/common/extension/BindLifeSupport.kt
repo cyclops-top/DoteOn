@@ -15,6 +15,7 @@ import mvp.BasePresenter
 fun <T> Observable<T>.bindLife(p: BasePresenter<*>):Observable<T> {
     return observeOn(AndroidSchedulers.mainThread())
             .compose(CheckLifeCycleTransformer(p.life))
+            .subscribeOn(AndroidSchedulers.mainThread())
 }
 
 class CheckLifeCycleTransformer<T>(val eventBehavior: BehaviorSubject<BasePresenter.STATE>) :
