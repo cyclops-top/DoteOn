@@ -1,8 +1,11 @@
 package justin.doteon.items
 
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
+import justin.common.app.SharedElementHelper
 import justin.common.utils.bindView
 import justin.doteon.R
+import justin.doteon.detail.DetailActivity
 import justin.doteon.model.MovieSubject
 import mvp.BindLayout
 import mvp.MVPLoadFragment
@@ -23,6 +26,11 @@ class ItemsFragment: MVPLoadFragment<ItemsPresenter>(),IItemsView{
         presenter.type = arguments["type"]!! as Int
         adapter.list = data
         list.adapter = adapter
+        adapter.setOnItemClickListener { v, position ->
+            val intent = Intent(context,DetailActivity::class.java)
+            intent.putExtra("data",data[position])
+            startActivity(intent, SharedElementHelper.makeSceneTransitionAnimation(activity))
+        }
     }
     override fun updateData(data: List<MovieSubject>,isMore: Boolean) {
         val size = this.data.size

@@ -29,17 +29,17 @@ class MainActivity : MVPActivity<MainPresenter>(), IMainView {
         setSupportActionBar(toolbar)
         val adapter = BaseFragmentPagerAdapter(supportFragmentManager)
         var args = Bundle()
-        args.putInt("type", MovieType.IN_THEATERS)
-        adapter.addFragment("正在热映", ItemsFragment::class.java, args)
-        args = Bundle()
-        args.putInt("type", MovieType.COMING)
-        adapter.addFragment("即将上映", ItemsFragment::class.java, args)
-        args = Bundle()
+//        args.putInt("type", MovieType.IN_THEATERS)
+//        adapter.addFragment("正在热映", ItemsFragment::class.java, args)
+//        args = Bundle()
+//        args.putInt("type", MovieType.COMING)
+//        adapter.addFragment("即将上映", ItemsFragment::class.java, args)
+//        args = Bundle()
         args.putInt("type", MovieType.TOP250)
         adapter.addFragment("TOP250", ItemsFragment::class.java, args)
         pager.adapter = adapter
         pager.offscreenPageLimit = 5
-        tabLayout.setupWithViewPager(pager, true)
+        tabLayout.setupWithViewPager(pager, false)
 
     }
 

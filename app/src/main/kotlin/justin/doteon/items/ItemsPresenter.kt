@@ -21,22 +21,24 @@ class ItemsPresenter(view: IItemsView) : BasePresenter<IItemsView>(view) {
 
 
     fun refresh() {
-        load(0).subscribe { data ->
+        load(0).bindLife(this).subscribe { data ->
             view.updateData(data,false)
         }
     }
 
     fun loadMore(history: ArrayList<MovieSubject>?) {
         val start = history?.size ?: 0
-        load(start).subscribe { data ->
+        load(start)
+                .bindLife(this)
+                .subscribe { data ->
             view.updateData(data,true)
         }
     }
 
 
     private fun load(start: Int): Observable<List<MovieSubject>> {
-        return getApi(start).bindLife(this).onErrorReturn { e ->
-            logd("justin" + e.message!!)
+        return getApi(start).onErrorReturn { e ->
+            logd("justin#" + e.message!!)
             MovieList()
         }.map { movieList ->
             if (movieList.count == 0) {

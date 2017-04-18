@@ -1,11 +1,13 @@
 package justin.doteon.model
 
+import java.io.Serializable
+
 /**
  * @author justin on 2017/04/13 14:13
  * *
  * @version V1.0
  */
-class MovieList {
+class MovieList: Serializable {
 
 
     var count: Int = 0

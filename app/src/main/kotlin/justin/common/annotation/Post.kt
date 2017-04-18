@@ -1,4 +1,4 @@
-package justin.common.network
+package justin.common.annotation
 
 /**
  * @author justin on 2017/04/13 13:58
@@ -7,4 +7,4 @@ package justin.common.network
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Get
+annotation class Post()

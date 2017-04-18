@@ -6,8 +6,8 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+import justin.common.extension.ImageView_Kt;
 import justin.common.view.BaseRecyclerAdapter;
-import justin.common.view.ImageView_Kt;
 import justin.doteon.R;
 import justin.doteon.model.MovieSubject;
 
@@ -46,9 +46,9 @@ public class ItemsAdapter extends BaseRecyclerAdapter<MovieSubject> {
         protected void bindData(MovieSubject data) {
             name.setText(data.getTitle());
             if (data.getImages() != null && data.getImages().getLarge() != null) {
-                ImageView_Kt.setImageURI(poster, data.getImages().getLarge());
+                ImageView_Kt.setImageURL(poster, data.getImages().getLarge());
             }else {
-                ImageView_Kt.setImageURI(poster, "");
+                ImageView_Kt.setImageURL(poster, "");
             }
             if(data.getRating() != null&&data.getRating().getAverage()!=0){
                 rating.setText(String.format(Locale.ENGLISH,"%.1f",data.getRating().getAverage()));

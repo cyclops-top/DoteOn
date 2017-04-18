@@ -27,4 +27,12 @@ public class ListUtils {
         }
         return sb.toString();
     }
+
+    public static <T> T getLast(List<T> list){
+       int size = size(list);
+        if(size > 0){
+            return list.get(size - 1);
+        }
+        return null;
+    }
 }

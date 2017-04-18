@@ -28,6 +28,8 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:tabPaddingStart="4dp"
+            app:tabPaddingEnd="4dp"
             app:tabGravity="fill"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/accent_material_dark_1"

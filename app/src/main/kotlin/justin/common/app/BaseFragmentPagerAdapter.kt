@@ -3,8 +3,7 @@ package justin.common.app
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
-import android.view.View
+import android.support.v4.app.FragmentPagerAdapter
 import android.view.ViewGroup
 import java.util.*
 
@@ -13,7 +12,7 @@ import java.util.*
  * @version V1.0
  */
 
-class BaseFragmentPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+class BaseFragmentPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     private val mPagerData = ArrayList<PagerItem>()
 

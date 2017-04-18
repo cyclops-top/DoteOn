@@ -1,11 +1,13 @@
 package justin.doteon.model
 
+import java.io.Serializable
+
 /**
  * @author justin on 2017/04/13 14:17
  * *
  * @version V1.0
  */
-class Director {
+class Director: Serializable {
 
 
     var alt: String? = null

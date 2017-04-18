@@ -7,7 +7,6 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.R.attr.data;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -23,7 +22,6 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("justin.doteon", appContext.getPackageName());
-
 
     }
 

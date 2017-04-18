@@ -1,5 +1,6 @@
 package justin.common.network;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -13,6 +14,9 @@ import java.util.Locale;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.schedulers.Schedulers;
+import justin.common.annotation.Cache;
+import justin.common.annotation.Get;
+import justin.common.annotation.Path;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -26,6 +30,7 @@ public class Api {
 
     private static final int METHOD_GET = 0;
     private static final int METHOD_POST = 1;
+    private static final Gson GSON = new Gson();
 
     public static <T> T get(Class<T> target) {
         Object out = apis.get(target);
@@ -62,30 +67,51 @@ public class Api {
         if (info.method == METHOD_GET && args != null && args.length > 0) {
             url = String.format(Locale.ENGLISH, url, args);
         }
-        Log.d("Api","url="+url);
-        Request request = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
+        Log.d("Api", "url=" + url);
+        final boolean isUseCache = info.cache > 0 && info.method == METHOD_GET;
+
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(url);
+        if (info.method == METHOD_GET) {
+            requestBuilder.get();
+        } else {
+            //todo  post
+        }
+        Request request = requestBuilder.build();
+        if (isUseCache) {
+
+        }
         //noinspection unchecked
         return Observable.create(
-                (ObservableOnSubscribe<Response>) e ->
-                        e.onNext(Client.get().newCall(request).execute()))
-                .subscribeOn(Schedulers.io())
-                .map(response -> {
+                (ObservableOnSubscribe<String>) source -> {
+                    if(isUseCache){
+                        String cache = Client.getCache().getAsString(request.url().toString());
+                        if(!TextUtils.isEmpty(cache)){
+                            source.onNext(cache);
+                            Log.d("Api","from cache");
+                            return;
+                        }
+                    }
+                    Response response = Client.get().newCall(request).execute();
                     if (response.isSuccessful()) {
                         try {
                             String result = response.body().string();
-                            Log.d("api",info.url+"#" + result);
-                            return new Gson().fromJson(result, tClass);
+                            if(isUseCache){
+                                Client.getCache().put(request.url().toString(),result,info.cache);
+                            }
+                            source.onNext(result);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            throw new NetworkException(1001, "parse is error");
+                            source.onError(new NetworkException(1001, "parse is error"));
                         }
                     } else {
-                        throw new NetworkException(response.code(), response.message());
+                        NetworkException e = new NetworkException(response.code(), response.message());
+                        Log.d("Api","network is error:\n[" + e.getCode() + "]" + e.getMessage());
+                        source.onError(e);
                     }
                 })
+                .subscribeOn(Schedulers.io())
+                .map(result -> GSON.fromJson(result, tClass))
                 .subscribeOn(Schedulers.computation());
 
     }
@@ -99,6 +125,10 @@ public class Api {
         Path path = method.getAnnotation(Path.class);
         info.url = "https://api.douban.com/" + path.value();
         info.dataClass = (Class<?>) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
+        Cache cache = method.getAnnotation(Cache.class);
+        if (cache != null) {
+            info.cache = cache.value();
+        }
         return info;
     }
 
@@ -106,6 +136,7 @@ public class Api {
         String url;
         int method = METHOD_POST;
         Class<?> dataClass;
+        int cache = 0;
 
         @Override
         public String toString() {
